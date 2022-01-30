@@ -8,21 +8,24 @@ const db = require("./config/connection");
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+let server;
+
 async function startServer() {
-  const server = (apolloServer = new ApolloServer({
+  server = new ApolloServer({
     typeDefs,
     resolvers,
-  }));
+  });
   await server.start();
   server.applyMiddleware({ app });
 }
 startServer();
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../client/build")));
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.join(__dirname, "../client/build")));
+// }
 
-app.use(routes);
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 db.once("open", () => {
   app.listen(PORT, () => {
